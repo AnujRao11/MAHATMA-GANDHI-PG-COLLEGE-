@@ -25,34 +25,44 @@
     import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+    // ✅ Use your actual Firebase config here (from Firebase Console > Settings)
     const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT.appspot.com",
-      messagingSenderId: "XXXXXXX",
-      appId: "YOUR_APP_ID"
+      apiKey: "AIzaSyCwseqkcXvyzdT0cbZCf-R3520ET3pz_o",
+      authDomain: "mgpg-department-portal.firebaseapp.com",
+      projectId: "mgpg-department-portal",
+      storageBucket: "mgpg-department-portal.appspot.com",
+      messagingSenderId: "416487635171",
+      appId: "1:416487635171:web:d1db57a95c2bd07635add6",
+      measurementId: "G-DBPQN57N5M"
     };
 
+    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const email = email.value;
-      const password = password.value;
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
 
       try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const uid = userCredential.user.uid;
-        const userDoc = await getDoc(doc(db, "users", uid));
-        const role = userDoc.data().role;
 
-        localStorage.setItem("userRole", role);
-        window.location.href = "dashboard.html";
+        // 🔍 Get user role from Firestore
+        const userDocRef = doc(db, "users", uid);
+        const userDocSnap = await getDoc(userDocRef);
+
+        if (userDocSnap.exists()) {
+          const role = userDocSnap.data().role;
+          localStorage.setItem("userRole", role);
+          window.location.href = "dashboard.html";
+        } else {
+          alert("No user role found. Please contact admin.");
+        }
       } catch (error) {
-        alert(error.message);
+        alert("Login failed: " + error.message);
       }
     });
   </script>

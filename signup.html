@@ -33,21 +33,21 @@
     <p class="mt-3 text-center">Already have an account? <a href="login.html">Login here</a></p>
   </div>
 
-  <!-- Firebase Compat SDKs (No module/imports) -->
+  <!-- Firebase SDKs (Compat version) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
   <script>
-    // Firebase config
+    // Your Firebase Config
     const firebaseConfig = {
-      apiKey: "AIzaSyCvsqeckKyvzdT6bc2f-R3S20ET3pz_o",
+      apiKey: "AIzaSyCwseqkcXvyzdT0cbZCf-R3520ET3pz_o",
       authDomain: "mgpg-department-portal.firebaseapp.com",
       projectId: "mgpg-department-portal",
       storageBucket: "mgpg-department-portal.appspot.com",
       messagingSenderId: "416487635171",
-      appId: "1:416487635171:web:87e284b51e0fa43653add6",
-      measurementId: "G-Q0HKY7ZZLK"
+      appId: "1:416487635171:web:d1db57a95c2bd07635add6",
+      measurementId: "G-DBPQN57N5M"
     };
 
     // Initialize Firebase
@@ -55,9 +55,10 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // Signup Form Submit
+    // Signup Logic
     document.getElementById("signupForm").addEventListener("submit", function(e) {
       e.preventDefault();
+
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
       const role = document.getElementById("role").value;
@@ -65,4 +66,21 @@
       auth.createUserWithEmailAndPassword(email, password)
         .then((userCredential) => {
           const uid = userCredential.user.uid;
+
+          // Save user role in Firestore
           return db.collection("users").doc(uid).set({
+            email: email,
+            role: role
+          });
+        })
+        .then(() => {
+          alert("Signup successful!");
+          window.location.href = "dashboard.html";
+        })
+        .catch((error) => {
+          alert("Error: " + error.message);
+        });
+    });
+  </script>
+</body>
+</html>

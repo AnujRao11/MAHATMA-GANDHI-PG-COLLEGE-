@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - MGPG Portal</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+  <div class="container mt-5">
+    <h2 class="mb-4">Login</h2>
+    <form id="loginForm">
+      <div class="mb-3">
+        <input type="email" id="email" class="form-control" placeholder="Email" required />
+      </div>
+      <div class="mb-3">
+        <input type="password" id="password" class="form-control" placeholder="Password" required />
+      </div>
+      <button type="submit" class="btn btn-success w-100">Login</button>
+    </form>
+    <p class="mt-3 text-center">New user? <a href="signup.html">Signup</a></p>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT.appspot.com",
+      messagingSenderId: "XXXXXXX",
+      appId: "YOUR_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = email.value;
+      const password = password.value;
+
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const uid = userCredential.user.uid;
+        const userDoc = await getDoc(doc(db, "users", uid));
+        const role = userDoc.data().role;
+
+        localStorage.setItem("userRole", role);
+        window.location.href = "dashboard.html";
+      } catch (error) {
+        alert(error.message);
+      }
+    });
+  </script>
+</body>
+</html>

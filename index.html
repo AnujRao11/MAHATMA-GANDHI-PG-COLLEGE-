@@ -80,6 +80,28 @@
       <p>&copy; 2025 Computer Application Department, MGPG College. Affiliated to DDU, Gorakhpur.</p>
     </div>
   </footer>
+  <!-- Firebase SDKs -->
+<script type="module">
+  // Import the Firebase functions
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
+
+  // Your Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyCvseqkcXvyzdT0cbZcF-R3520ET73pz_o",
+    authDomain: "mgpg-department-portal.firebaseapp.com",
+    projectId: "mgpg-department-portal",
+    storageBucket: "mgpg-department-portal.appspot.com",
+    messagingSenderId: "416487635171",
+    appId: "1:416487635171:web:87e284b51e0fa43635add6",
+    measurementId: "G-Q0HKY7ZZLK"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
+
 </body>
 
 </html>

@@ -33,14 +33,13 @@
     <p class="mt-3 text-center">Already have an account? <a href="login.html">Login here</a></p>
   </div>
 
-  <!-- Firebase + Signup Script -->
-  <script type="module">
-    // Firebase SDKs
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  <!-- Firebase Compat SDKs (No module/imports) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
-    // Replace below with your Firebase project config (already shown in index.html)
+  <script>
+    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyCvsqeckKyvzdT6bc2f-R3S20ET3pz_o",
       authDomain: "mgpg-department-portal.firebaseapp.com",
@@ -49,47 +48,21 @@
       messagingSenderId: "416487635171",
       appId: "1:416487635171:web:87e284b51e0fa43653add6",
       measurementId: "G-Q0HKY7ZZLK"
-      const firebaseConfig = {
-  apiKey: "AIzaSyCvsqeckKyvzdT6bc2f-R3S20ET3pz_o",
-  authDomain: "mgpg-department-portal.firebaseapp.com",
-  projectId: "mgpg-department-portal",
-  storageBucket: "mgpg-department-portal.appspot.com",
-  messagingSenderId: "416487635171",
-  appId: "1:416487635171:web:87e284b51e0fa43653add6",
-  measurementId: "G-Q0HKY7ZZLK"
-};
-
-      
     };
 
     // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
-    // Handle Signup
-    document.getElementById("signupForm").addEventListener("submit", async (e) => {
+    // Signup Form Submit
+    document.getElementById("signupForm").addEventListener("submit", function(e) {
       e.preventDefault();
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
       const role = document.getElementById("role").value;
 
-      try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const uid = userCredential.user.uid;
-
-        // Save user role in Firestore
-        await setDoc(doc(db, "users", uid), {
-          email: email,
-          role: role
-        });
-
-        alert("Signup successful! Redirecting...");
-        window.location.href = "dashboard.html";
-      } catch (error) {
-        alert("Error: " + error.message);
-      }
-    });
-  </script>
-</body>
-</html>
+      auth.createUserWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          const uid = userCredential.user.uid;
+          return db.collection("users").doc(uid).set({

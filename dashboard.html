@@ -12,23 +12,59 @@
     <button onclick="logout()" class="btn btn-danger mt-4">Logout</button>
   </div>
 
-  <script>
-    const role = localStorage.getItem("userRole");
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    // ✅ Paste your updated firebaseConfig here
+    const firebaseConfig = {
+      apiKey: "AIzaSyCwseqkcXvydzT0cbZcF-R3S20ET3pz_o",
+      authDomain: "mgpg-department-portal.firebaseapp.com",
+      projectId: "mgpg-department-portal",
+      storageBucket: "mgpg-department-portal.appspot.com",
+      messagingSenderId: "416487635171",
+      appId: "1:416487635171:web:d1db57a95c2bd07635add6",
+      measurementId: "G-DBPQN57N5M"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
     const dashboardContent = document.getElementById("dashboardContent");
 
-    if (role === "Admin") {
-      dashboardContent.innerHTML = "<h4>Admin Panel</h4><p>Manage users, view reports, etc.</p>";
-    } else if (role === "Teacher") {
-      dashboardContent.innerHTML = "<h4>Teacher Dashboard</h4><p>Submit attendance, upload exam dates.</p>";
-    } else if (role === "Student") {
-      dashboardContent.innerHTML = "<h4>Student Dashboard</h4><p>View attendance, project status.</p>";
-    } else {
-      window.location.href = "login.html";
-    }
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const uid = user.uid;
+        const userDoc = await getDoc(doc(db, "users", uid));
+
+        if (userDoc.exists()) {
+          const role = userDoc.data().role;
+
+          if (role === "Admin") {
+            dashboardContent.innerHTML = "<h4>Admin Panel</h4><p>Manage users, view reports, etc.</p>";
+          } else if (role === "Teacher") {
+            dashboardContent.innerHTML = "<h4>Teacher Dashboard</h4><p>Submit attendance, upload exam dates.</p>";
+          } else if (role === "Student") {
+            dashboardContent.innerHTML = "<h4>Student Dashboard</h4><p>View attendance, project status.</p>";
+          } else {
+            dashboardContent.innerHTML = "<p>Unknown role.</p>";
+          }
+        } else {
+          dashboardContent.innerHTML = "<p>User data not found.</p>";
+        }
+      } else {
+        // Not logged in
+        window.location.href = "login.html";
+      }
+    });
 
     function logout() {
-      localStorage.clear();
-      window.location.href = "login.html";
+      signOut(auth).then(() => {
+        window.location.href = "login.html";
+      });
     }
   </script>
 </body>
